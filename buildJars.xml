@@ -23,7 +23,7 @@
         <fail message="missing property(ies) : classes, jars_dest"/>
     </target>
 
-	<property name="project" value="JMetaagents"/>	
+	<property name="project" value="JHTTPRequest"/>	
 	<property name="pkg_base" value="aka"/>	
 
     <property name="target.managers" value="${jars_dest}"/>

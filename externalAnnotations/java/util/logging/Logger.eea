@@ -1,0 +1,7 @@
+class java/util/logging/Logger
+demandLogger
+ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class<*>;)Ljava/util/logging/Logger;
+ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class<*>;)L1java/util/logging/Logger;
+getLogger
+ (Ljava/lang/String;)Ljava/util/logging/Logger;
+ (Ljava/lang/String;)L1java/util/logging/Logger;

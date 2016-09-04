@@ -22,8 +22,8 @@
     	
     <import file="classpath.xml" />
 
-    <path id="JMetaagents.source">
-		<pathelement location="JMetaagents/javasource/" />
+    <path id="JHTTPRequest.source">
+		<pathelement location="JHTTPRequest/javasource/" />
 	</path>
 
 
@@ -38,7 +38,7 @@
 			source="1.7" 
 			linksource="false" 
 			classpathref="JHTTPRequest.classpath"
-			sourcepathref="JMetaagents.source"
+			sourcepathref="JHTTPRequest.source"
 			packagenames="aka/**/*.*"
 			breakiterator="true" 
 			private="true" >
