@@ -42,7 +42,7 @@
             <format property="TODAY_UK" pattern="yyyy-MM-dd HH:mm" locale="en,UK"/>
         </tstamp>
         
-        <jar jarfile="${target.applications}/${project}.jar" basedir="${classes}"
+        <jar jarfile="${target.applications}/build/${project}.jar" basedir="${classes}"
              includes="${pkg_base}/**" 
              excludes="${pkg_base}/**/*_JUnitTest.*">
                 
