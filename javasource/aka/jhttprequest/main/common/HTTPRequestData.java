@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpEntity;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Charlotte
@@ -17,7 +19,11 @@ public final class HTTPRequestData {
     private final URL url;
     @NonNull
     private final Map<@NonNull String, Object> params = new HashMap<>();
+    @NonNull
+    private final Map<@NonNull String, String> headers = new HashMap<>();
     private boolean allowSelfSignedCertificate = false;
+    @Nullable
+    private HttpEntity typeParameterClass = null;
 
     /**
      * Constructor.
@@ -30,6 +36,18 @@ public final class HTTPRequestData {
     }
 
     /**
+     * Constructor.
+     *
+     * @param url URL to request
+     * @param typeParameterClass type of HTTPEntity to use.
+     * @throws MalformedURLException
+     */
+    public HTTPRequestData(@NonNull final String url, @NonNull final HttpEntity typeParameterClass) throws MalformedURLException {
+        this(url);
+        this.typeParameterClass = typeParameterClass;
+    }
+
+    /**
      * Add parameter to the request.
      *
      * @param name
@@ -37,6 +55,16 @@ public final class HTTPRequestData {
      */
     public final void addParams(@NonNull final String name, @NonNull final Object param) {
         this.params.put(name, param);
+    }
+
+    /**
+     * Add header to the request.
+     *
+     * @param name
+     * @param header
+     */
+    public final void addHeader(@NonNull final String name, @NonNull final String header) {
+        this.headers.put(name, header);
     }
 
     /**
@@ -71,6 +99,17 @@ public final class HTTPRequestData {
     }
 
     /**
+     * Get headers for the request.
+     *
+     * @return the headers
+     */
+    @NonNull
+    public Map<@NonNull String, String> getHeaders() {
+        final Map<@NonNull String, String> result = Collections.unmodifiableMap(this.headers);
+        return result;
+    }
+
+    /**
      * Allow self certificate SSL for this request.
      *
      * @param allowSelfSignedCertificate
@@ -86,6 +125,16 @@ public final class HTTPRequestData {
      */
     public boolean isAllowSelfSignedCertificate() {
         return this.allowSelfSignedCertificate;
+    }
+
+    /**
+     * Get HTTPEntity type.
+     *
+     * @return the typeParameterClass
+     */
+    @Nullable
+    public final HttpEntity getTypeParameterClass() {
+        return this.typeParameterClass;
     }
 
 }

@@ -55,7 +55,7 @@ public class HTTPManager {
     private static final Logger LOGGER = Logger.getLogger(HTTPManager.class.getSimpleName());
 
     /**
-     * Send a "Get" http(s) request
+     * Send a "Get" HTTP(s) request.
      *
      * @param httpRequestData
      * @return String if result found, null if not (null means that the request can be resend an other time)
@@ -104,7 +104,13 @@ public class HTTPManager {
         try {
             final HttpGet httpget = new HttpGet(url);
 
-            httpget.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
+            if (httpRequestData.getHeaders().isEmpty()) {
+                httpget.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
+            } else {
+                for (final Entry<@NonNull String, String> header : httpRequestData.getHeaders().entrySet()) {
+                    httpget.addHeader(header.getKey(), header.getValue());
+                }
+            }
 
             // Create a response handler
             final HttpResponse response = httpclient.execute(httpget);
@@ -126,7 +132,7 @@ public class HTTPManager {
     }
 
     /**
-     * Send a "Post" http(s) request
+     * Send a "Post" HTTP(s) request.
      *
      * @param httpRequestData
      * @return String if result found, null if connection lost, server busy
@@ -162,10 +168,24 @@ public class HTTPManager {
         try {
             final HttpPost httpPost = new HttpPost(url);
 
-            httpPost.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
-            httpPost.addHeader("Content-Type", MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED);
-            final List<NameValuePair> params = getParamsToUrl(httpRequestData);
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            if (httpRequestData.getHeaders().isEmpty()) {
+                httpPost.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
+                httpPost.addHeader("Content-Type", MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED);
+            } else {
+                for (final Entry<@NonNull String, String> header : httpRequestData.getHeaders().entrySet()) {
+                    httpPost.addHeader(header.getKey(), header.getValue());
+                }
+            }
+            final HttpEntity typeParametrizedClass = httpRequestData.getTypeParameterClass();
+            if (typeParametrizedClass == null) {
+                final List<NameValuePair> params = getParamsToUrl(httpRequestData);
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+            } else if (typeParametrizedClass instanceof UrlEncodedFormEntity) {
+                final List<NameValuePair> params = getParamsToUrl(httpRequestData);
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+            } else {
+                httpPost.setEntity(typeParametrizedClass);
+            }
             // Create a response handler
             final HttpResponse response = httpclient.execute(httpPost);
             if (response == null) {
