@@ -1,2 +1,6 @@
-Quick & Dirty Lib to manage HTTP request.
+# JHTTPRequest #
+
+## Quick summary ##
+
+Quick & Dirty java Lib to manage HTTP request.
 
