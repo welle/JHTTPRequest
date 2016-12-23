@@ -1,0 +1,59 @@
+<project basedir="." default="runCompile" name="JHTTPRequest">
+
+    <target name="runCompile" depends="chkProps, fail" unless="missingProp">
+        <echo message="Compiling..." />
+        <antcall target="compile" />
+    </target>
+
+    <target name="chkProps">
+        <property name="chk0" value="$${classes}" />
+        <property name="chk5" value="$${test_classes}" />
+        <condition property="missingProp">
+            <or>
+                <equals arg1="${chk0}" arg2="${classes}" />
+                <equals arg1="" arg2="${classes}" />
+                <equals arg1="${chk5}" arg2="${test_classes}" />
+                <equals arg1="" arg2="${test_classes}" />
+            </or>
+        </condition>
+    </target>
+
+    <target name="fail" if="missingProp">
+        <fail message="missing property(ies) : classes, test_classes" />
+    </target>
+
+    <property name="debuglevel" value="source,lines,vars" />
+    <property name="target" value="1.8" />
+    <property name="source" value="1.8" />
+
+    <import file="classpath.xml" />
+
+    <target name="compile">
+        <echo>
+      ********************************************************
+      *
+      *  Compile ${ant.project.name}
+      *
+      ********************************************************
+    </echo>
+        <delete dir="${classes}" />
+        <delete dir="${test_classes}" />
+        <mkdir dir="${classes}" />
+        <mkdir dir="${test_classes}" />
+
+        <!-- Export classpath to file that can be understood by sonar -->
+        <pathconvert property="sonar.libraries" pathsep="," refid="JHTTPRequest.classpath" targetos="unix" />
+        <echo file="sonar-project.properties" message="sonar.libraries=${sonar.libraries}" />
+
+        <javac encoding="8859_1" debug="true" debuglevel="${debuglevel}" destdir="${classes}" source="${source}" target="${target}" includeantruntime="false">
+            <src path="JHTTPRequest/javasource" />
+            <classpath refid="JHTTPRequest.classpath" />
+        </javac>
+
+        <!--javac encoding="8859_1" debug="true" debuglevel="${debuglevel}" destdir="${test_classes}" source="${source}" target="${target}" includeantruntime="false">
+            <src path="JFileNameScanner/javasourceTest" />
+            <classpath refid="JFileNameScanner.classpath" />
+            <classpath path="${classes}" />
+        </javac-->
+    </target>
+</project>
