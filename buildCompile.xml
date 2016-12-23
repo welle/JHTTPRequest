@@ -12,8 +12,6 @@
             <or>
                 <equals arg1="${chk0}" arg2="${classes}" />
                 <equals arg1="" arg2="${classes}" />
-                <equals arg1="${chk5}" arg2="${test_classes}" />
-                <equals arg1="" arg2="${test_classes}" />
             </or>
         </condition>
     </target>
@@ -37,9 +35,7 @@
       ********************************************************
     </echo>
         <delete dir="${classes}" />
-        <delete dir="${test_classes}" />
         <mkdir dir="${classes}" />
-        <mkdir dir="${test_classes}" />
 
         <!-- Export classpath to file that can be understood by sonar -->
         <pathconvert property="sonar.libraries" pathsep="," refid="JHTTPRequest.classpath" targetos="unix" />
