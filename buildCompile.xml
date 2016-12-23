@@ -42,7 +42,7 @@
         <echo file="sonar-project.properties" message="sonar.libraries=${sonar.libraries}" />
 
         <javac encoding="8859_1" debug="true" debuglevel="${debuglevel}" destdir="${classes}" source="${source}" target="${target}" includeantruntime="false">
-            <src path="JHTTPRequest/javasource" />
+            <src path="javasource" />
             <classpath refid="JHTTPRequest.classpath" />
         </javac>
 
