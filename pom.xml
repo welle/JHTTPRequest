@@ -16,28 +16,7 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.5.1</version>
-				<executions>
-					<execution>
-						<id>default-deploy</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<serverId>nexus-snapshots</serverId>
-					<nexusUrl>https://nexus.hephaistos.be/repository/Snapshots/</nexusUrl>
-					<skipStaging>true</skipStaging>
-				</configuration>
-			</plugin>
-			
-	<dependencies>
+					<dependencies>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -80,6 +59,28 @@
 			<version>2.0.0</version>
 		</dependency>
 	</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<serverId>nexus-snapshots</serverId>
+					<nexusUrl>https://nexus.hephaistos.be/repository/Snapshots/</nexusUrl>
+					<skipStaging>true</skipStaging>
+				</configuration>
+			</plugin>
+			
+
 		</plugins>
 
 		<pluginManagement>
