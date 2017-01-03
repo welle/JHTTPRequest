@@ -36,27 +36,7 @@
 					<skipStaging>true</skipStaging>
 				</configuration>
 			</plugin>
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.sonarsource.scanner.maven</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.1.1</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-
-	<distributionManagement>
-	   <snapshotRepository>
-	      <id>nexus-snapshots</id>
-	      <url>https://nexus.hephaistos.be/repository/Snapshots/</url>
-	   </snapshotRepository>
-	</distributionManagement>
-
-
+			
 	<dependencies>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -100,4 +80,68 @@
 			<version>2.0.0</version>
 		</dependency>
 	</dependencies>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<distributionManagement>
+	   <snapshotRepository>
+	      <id>nexus-snapshots</id>
+	      <url>https://nexus.hephaistos.be/repository/Snapshots/</url>
+	   </snapshotRepository>
+	</distributionManagement>
+
+<dependencies>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient-cache</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.annotation -->
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.annotation</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+	</dependencies>
+
 </project>
