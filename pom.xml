@@ -4,6 +4,7 @@
 	<groupId>JHTTPRequest</groupId>
 	<artifactId>JHTTPRequest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<build>
 		<sourceDirectory>javasource</sourceDirectory>
 		<testSourceDirectory>javasourceTest</testSourceDirectory>
@@ -14,6 +15,25 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<serverId>nexus-snapshots</serverId>
+					<nexusUrl>https://nexus.hephaistos.be/repository/Snapshots/</nexusUrl>
+					<skipStaging>true</skipStaging>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -28,6 +48,13 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<distributionManagement>
+	   <snapshotRepository>
+	      <id>nexus-snapshots</id>
+	      <url>https://nexus.hephaistos.be/repository/Snapshots/</url>
+	   </snapshotRepository>
+	</distributionManagement>
 
 
 	<dependencies>
