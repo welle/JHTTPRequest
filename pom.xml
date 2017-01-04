@@ -36,7 +36,26 @@
 					<skipStaging>true</skipStaging>
 				</configuration>
 			</plugin>
-			
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<id>default-deploy-release</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<serverId>nexus-releases</serverId>
+					<nexusUrl>https://nexus.hephaistos.be/repository/Releases/</nexusUrl>
+					<skipStaging>true</skipStaging>
+				</configuration>
+			</plugin>
+
 
 		</plugins>
 
@@ -52,13 +71,17 @@
 	</build>
 
 	<distributionManagement>
-	   <snapshotRepository>
-	      <id>nexus-snapshots</id>
-	      <url>https://nexus.hephaistos.be/repository/Snapshots/</url>
-	   </snapshotRepository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>https://nexus.hephaistos.be/repository/Snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-snapshots</id>
+			<url>https://nexus.hephaistos.be/repository/Releases/</url>
+		</repository>
 	</distributionManagement>
 
-<dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
