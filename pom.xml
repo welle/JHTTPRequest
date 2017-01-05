@@ -5,6 +5,9 @@
 	<artifactId>JHTTPRequest</artifactId>
 	<version>${PROJECT_VERSION}</version>
 
+	<properties>
+		<projectVersion>0.0.4</projectVersion>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -63,13 +66,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.9.5</version>
-				<configuration>
-					<tag>${project.artifactId}-${PROJECT_VERSION}</tag>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
@@ -81,7 +77,7 @@
 		<profile>
 			<id>snapshot</id>
 			<properties>
-				<PROJECT_VERSION>0.0.4-SNAPSHOT</PROJECT_VERSION>
+				<PROJECT_VERSION>${projectVersion}-SNAPSHOT</PROJECT_VERSION>
 			</properties>
 			<build>
 				<plugins>
@@ -102,6 +98,13 @@
 							<serverId>nexus-snapshots</serverId>
 							<nexusUrl>https://nexus.hephaistos.be/repository/Snapshots/</nexusUrl>
 							<skipStaging>true</skipStaging>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<tag>${project.artifactId}-${projectVersion}-${BUILD_NUMBER}-SNAPSHOT</tag>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -141,6 +144,13 @@
 							<serverId>nexus-releases</serverId>
 							<nexusUrl>https://nexus.hephaistos.be/repository/Releases/</nexusUrl>
 							<skipStaging>true</skipStaging>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<tag>${project.artifactId}-${projectVersion}-${BUILD_NUMBER}</tag>
 						</configuration>
 					</plugin>
 				</plugins>
