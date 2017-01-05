@@ -5,10 +5,6 @@
 	<artifactId>JHTTPRequest</artifactId>
 	<version>${PROJECT_VERSION}</version>
 
-	<properties>
-		<projectVersion>0.0.4</projectVersion>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -51,12 +47,36 @@
 			<artifactId>org.eclipse.jdt.annotation</artifactId>
 			<version>2.0.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/properties-maven-plugin -->
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>properties-maven-plugin</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<sourceDirectory>javasource</sourceDirectory>
 		<testSourceDirectory>javasourceTest</testSourceDirectory>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>./pom.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
@@ -174,4 +194,5 @@
 		<developerConnection>scm:git:ssh://git@gitlab.com/cwelle/JHTTPRequest.git</developerConnection>
 		<url>https://gitlab.com/cwelle/JHTTPRequest</url>
 	</scm>
+
 </project>
