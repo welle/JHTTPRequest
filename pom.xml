@@ -124,7 +124,7 @@
 						<artifactId>maven-scm-plugin</artifactId>
 						<version>1.9.5</version>
 						<configuration>
-							<tag>${project.artifactId}-${projectVersion}-${BUILD_NUMBER}-SNAPSHOT</tag>
+							<tag>${project.artifactId}-${projectVersion}-SNAPSHOT</tag>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -143,7 +143,7 @@
 		<profile>
 			<id>release</id>
 			<properties>
-				<PROJECT_VERSION>1.0</PROJECT_VERSION>
+				<PROJECT_VERSION>${projectVersion}</PROJECT_VERSION>
 			</properties>
 			<build>
 				<plugins>
@@ -170,7 +170,7 @@
 						<artifactId>maven-scm-plugin</artifactId>
 						<version>1.9.5</version>
 						<configuration>
-							<tag>${project.artifactId}-${projectVersion}-${BUILD_NUMBER}</tag>
+							<tag>${project.artifactId}-${projectVersion}</tag>
 						</configuration>
 					</plugin>
 				</plugins>
