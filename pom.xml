@@ -5,6 +5,12 @@
 	<artifactId>JHTTPRequest</artifactId>
 	<version>1.1.0</version>
 
+	<properties>
+		<!-- Source encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
+
 	<profiles>
 		<profile>
 			<id>m2e</id>
@@ -46,6 +52,22 @@
 		</profile>
 	</profiles>
 
+	<repositories>
+		<repository>
+			<id>welle-maven-repository</id>
+			<url>https://raw.githubusercontent.com/welle/maven-repository/master/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
