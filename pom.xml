@@ -1,9 +1,51 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>JHTTPRequest</groupId>
+	<groupId>aka.jhttprequest</groupId>
 	<artifactId>JHTTPRequest</artifactId>
-	<version>${PROJECT_VERSION}</version>
+	<version>1.1.0</version>
+
+	<profiles>
+		<profile>
+			<id>m2e</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<properties>
+				<m2e.jdt.annotationpath>/JHTTPRequest/src/main/resources/externalAnnotations</m2e.jdt.annotationpath>
+			</properties>
+			<dependencies>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>appserverConfig-dev</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>dev</value>
+				</property>
+			</activation>
+			<properties>
+				<github.maven.repository>file:///c:/Projects/Own/maven-repository/</github.maven.repository>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>appserverConfig-dev-2</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>dev-travis</value>
+				</property>
+			</activation>
+			<properties>
+				<github.maven.repository>file:///home/travis/repository</github.maven.repository>
+			</properties>
+		</profile>
+	</profiles>
+
 
 	<dependencies>
 		<dependency>
@@ -56,143 +98,33 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>javasource</sourceDirectory>
-		<testSourceDirectory>javasourceTest</testSourceDirectory>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>./pom.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
-			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.3.0.603</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>snapshot</id>
-			<properties>
-				<PROJECT_VERSION>${projectVersion}-SNAPSHOT</PROJECT_VERSION>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.5.1</version>
-						<executions>
-							<execution>
-								<id>default-deploy</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>deploy</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<serverId>nexus-snapshots</serverId>
-							<nexusUrl>https://nexus.hephaistos.be/repository/Snapshots/</nexusUrl>
-							<skipStaging>true</skipStaging>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<tag>${project.artifactId}-${projectVersion}-SNAPSHOT</tag>
-						</configuration>
-					</plugin>
-				</plugins>
-
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.sonarsource.scanner.maven</groupId>
-							<artifactId>sonar-maven-plugin</artifactId>
-							<version>3.1.1</version>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-		<profile>
-			<id>release</id>
-			<properties>
-				<PROJECT_VERSION>${projectVersion}</PROJECT_VERSION>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.5.1</version>
-						<executions>
-							<execution>
-								<id>default-deploy</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>deploy</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<serverId>nexus-releases</serverId>
-							<nexusUrl>https://nexus.hephaistos.be/repository/Releases/</nexusUrl>
-							<skipStaging>true</skipStaging>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<tag>${project.artifactId}-${projectVersion}</tag>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 	<distributionManagement>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>https://nexus.hephaistos.be/repository/Snapshots/</url>
-		</snapshotRepository>
 		<repository>
-			<id>nexus-snapshots</id>
-			<url>https://nexus.hephaistos.be/repository/Releases/</url>
+			<id>maven-repository</id>
+			<url>${github.maven.repository}</url>
 		</repository>
 	</distributionManagement>
-
-	<scm>
-		<connection>scm:git:ssh://git@gitlab.com/cwelle/JHTTPRequest.git</connection>
-		<developerConnection>scm:git:ssh://git@gitlab.com/cwelle/JHTTPRequest.git</developerConnection>
-		<url>https://gitlab.com/cwelle/JHTTPRequest</url>
-	</scm>
 
 </project>
