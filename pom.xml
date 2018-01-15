@@ -20,7 +20,7 @@
 				</property>
 			</activation>
 			<properties>
-				<m2e.jdt.annotationpath>/JHTTPRequest/src/main/resources/externalAnnotations</m2e.jdt.annotationpath>
+				<m2e.jdt.annotationpath>${basedir}/src/main/resources/externalAnnotations</m2e.jdt.annotationpath>
 			</properties>
 			<dependencies>
 			</dependencies>
