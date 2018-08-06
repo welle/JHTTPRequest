@@ -68,18 +68,22 @@ public class HTTPManager {
         try {
             result = AccessController.doPrivileged((PrivilegedExceptionAction<HTTPResponseData<@NonNull ?>>) () -> sendGetRequestPrivileged(httpRequestData));
         } catch (final PrivilegedActionException e) {
-            final Throwable t = e.getCause();
-            if (t instanceof HTTPException) {
-                final var httpException = (HTTPException) e.getException();
-                throw httpException;
-            } else {
-                LOGGER.logp(Level.SEVERE, "HTTPManager", "sendGetRequest", e.getMessage(), e);
-                throw new HTTPException(e.getMessage(), e.getCause());
-            }
+            handleException(e, "sendGetRequest");
         }
 
         assert result != null;
         return result;
+    }
+
+    private void handleException(final @NonNull PrivilegedActionException e, @NonNull final String failingMethodName) throws HTTPException {
+        final Throwable t = e.getCause();
+        if (t instanceof HTTPException) {
+            final var httpException = (HTTPException) e.getException();
+            throw httpException;
+        } else {
+            LOGGER.logp(Level.SEVERE, "HTTPManager", "failingMethodName", e.getMessage(), e);
+            throw new HTTPException(e.getMessage(), e.getCause());
+        }
     }
 
     @NonNull
@@ -144,14 +148,7 @@ public class HTTPManager {
         try {
             result = AccessController.doPrivileged((PrivilegedExceptionAction<HTTPResponseData<@NonNull ?>>) () -> sendPostRequestPrivileged(httpRequestData));
         } catch (final PrivilegedActionException e) {
-            final Throwable t = e.getCause();
-            if (t instanceof HTTPException) {
-                final var httpException = (HTTPException) e.getException();
-                throw httpException;
-            } else {
-                LOGGER.logp(Level.SEVERE, "HTTPManager", "sendPostRequest", e.getMessage(), e);
-                throw new HTTPException(e.getMessage(), e.getCause());
-            }
+            handleException(e, "sendPostRequest");
         }
 
         assert result != null;
@@ -256,14 +253,7 @@ public class HTTPManager {
         try {
             result = AccessController.doPrivileged((PrivilegedExceptionAction<BufferedImage>) () -> ImageIO.read(entity.getContent()));
         } catch (final PrivilegedActionException e) {
-            final Throwable t = e.getCause();
-            if (t instanceof HTTPException) {
-                final var httpException = (HTTPException) e.getException();
-                throw httpException;
-            } else {
-                LOGGER.logp(Level.SEVERE, "HTTPManager", "getContentAsImage", e.getMessage(), e);
-                throw new HTTPException(e.getMessage(), e.getCause());
-            }
+            handleException(e, "getContentAsImage");
         }
 
         assert result != null;
@@ -281,9 +271,7 @@ public class HTTPManager {
             }
 
             result = sb.toString();
-        } catch (final IllegalStateException e) {
-            LOGGER.logp(Level.SEVERE, "HTTPManager", "getContent", e.getMessage(), e);
-        } catch (final IOException e) {
+        } catch (final IllegalStateException | IOException e) {
             LOGGER.logp(Level.SEVERE, "HTTPManager", "getContent", e.getMessage(), e);
         }
 
@@ -309,9 +297,7 @@ public class HTTPManager {
                 final var httpsScheme = new Scheme("https", 443, sf);
                 httpclient.getConnectionManager().getSchemeRegistry().register(httpsScheme);
 
-            } catch (final KeyManagementException e) {
-                LOGGER.logp(Level.SEVERE, "HTTPManager", "getHttpClient", e.getMessage(), e);
-            } catch (final NoSuchAlgorithmException e) {
+            } catch (final KeyManagementException | NoSuchAlgorithmException e) {
                 LOGGER.logp(Level.SEVERE, "HTTPManager", "getHttpClient", e.getMessage(), e);
             }
         }
