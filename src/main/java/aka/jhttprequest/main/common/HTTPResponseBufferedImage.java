@@ -16,7 +16,7 @@ public final class HTTPResponseBufferedImage implements HTTPResponseData<@NonNul
     @Override
     @NonNull
     public BufferedImage getContent() {
-        final BufferedImage result = this.content;
+        final var result = this.content;
         assert result != null;
         return result;
     }

@@ -1,4 +1,4 @@
-# JHTTPRequest [![Build Status](https://travis-ci.org/welle/JHTTPRequest.svg?branch=master)](https://travis-ci.org/welle/JHTTPRequest) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=aka.jhttprequest:JHTTPRequest)](https://sonarcloud.io/dashboard/index/aka.jhttprequest:JHTTPRequest) #
+# JHTTPRequest [![Build Status](https://travis-ci.org/welle/JHTTPRequest.svg?branch=master)](https://travis-ci.org/welle/JHTTPRequest) [![quality gate](https://sonarcloud.io/api/project_badges/measure?project=aka.jhttprequest%3AJHTTPRequest&metric=alert_status)](https://sonarcloud.io/dashboard?id=aka.jhttprequest%3AJHTTPRequest) #
 
 ## Quick summary ##
 

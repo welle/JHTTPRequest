@@ -14,7 +14,7 @@ public final class HTTPResponseString implements HTTPResponseData<@NonNull Strin
     @Override
     @NonNull
     public String getContent() {
-        final String result = this.content;
+        final var result = this.content;
         assert result != null;
         return result;
     }

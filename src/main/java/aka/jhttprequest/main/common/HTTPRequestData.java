@@ -74,8 +74,7 @@ public final class HTTPRequestData {
      */
     @NonNull
     public final URL getUrl() {
-        final URL result = this.url;
-        return result;
+        return this.url;
     }
 
     /**
@@ -94,8 +93,7 @@ public final class HTTPRequestData {
      */
     @NonNull
     public Map<@NonNull String, Object> getParams() {
-        final Map<@NonNull String, Object> result = Collections.unmodifiableMap(this.params);
-        return result;
+        return Collections.unmodifiableMap(this.params);
     }
 
     /**
@@ -105,8 +103,7 @@ public final class HTTPRequestData {
      */
     @NonNull
     public Map<@NonNull String, String> getHeaders() {
-        final Map<@NonNull String, String> result = Collections.unmodifiableMap(this.headers);
-        return result;
+        return Collections.unmodifiableMap(this.headers);
     }
 
     /**
@@ -136,5 +133,4 @@ public final class HTTPRequestData {
     public final HttpEntity getTypeParameterClass() {
         return this.typeParameterClass;
     }
-
 }

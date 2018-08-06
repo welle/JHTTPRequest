@@ -14,7 +14,6 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +26,6 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -38,12 +36,12 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.jdt.annotation.NonNull;
+import org.springframework.http.MediaType;
 
 import aka.jhttprequest.main.common.HTTPRequestData;
 import aka.jhttprequest.main.common.HTTPResponseBufferedImage;
 import aka.jhttprequest.main.common.HTTPResponseData;
 import aka.jhttprequest.main.common.HTTPResponseString;
-import aka.jhttprequest.main.constants.MimeTypeConstants;
 import aka.jhttprequest.main.exceptions.HTTPException;
 
 /**
@@ -72,7 +70,7 @@ public class HTTPManager {
         } catch (final PrivilegedActionException e) {
             final Throwable t = e.getCause();
             if (t instanceof HTTPException) {
-                final HTTPException httpException = (HTTPException) e.getException();
+                final var httpException = (HTTPException) e.getException();
                 throw httpException;
             } else {
                 LOGGER.logp(Level.SEVERE, "HTTPManager", "sendGetRequest", e.getMessage(), e);
@@ -87,25 +85,25 @@ public class HTTPManager {
     @NonNull
     private HTTPResponseData<?> sendGetRequestPrivileged(@NonNull final HTTPRequestData httpRequestData) throws HTTPException {
         HTTPResponseData<?> result = null;
-        final DefaultHttpClient httpclient = getHttpClient(httpRequestData);
-        final StringBuilder sb = new StringBuilder();
-        final String baseUrl = httpRequestData.getUrl().toString();
+        final var httpclient = getHttpClient(httpRequestData);
+        final var sb = new StringBuilder();
+        final var baseUrl = httpRequestData.getUrl().toString();
         sb.append(baseUrl);
-        final List<NameValuePair> params = getParamsToUrl(httpRequestData);
+        final var params = getParamsToUrl(httpRequestData);
         if (!params.isEmpty()) {
-            final String paramString = URLEncodedUtils.format(params, "utf-8");
+            final var paramString = URLEncodedUtils.format(params, "utf-8");
             if (!baseUrl.endsWith("?")) {
                 sb.append('?');
             }
             sb.append(paramString);
         }
 
-        final String url = sb.toString();
+        final var url = sb.toString();
         try {
-            final HttpGet httpget = new HttpGet(url);
+            final var httpget = new HttpGet(url);
 
             if (httpRequestData.getHeaders().isEmpty()) {
-                httpget.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
+                httpget.addHeader("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
             } else {
                 for (final Entry<@NonNull String, String> header : httpRequestData.getHeaders().entrySet()) {
                     httpget.addHeader(header.getKey(), header.getValue());
@@ -113,7 +111,7 @@ public class HTTPManager {
             }
 
             // Create a response handler
-            final HttpResponse response = httpclient.execute(httpget);
+            final var response = httpclient.execute(httpget);
             if (response == null) {
                 throw new HTTPException("No Response from: " + url);
             }
@@ -148,7 +146,7 @@ public class HTTPManager {
         } catch (final PrivilegedActionException e) {
             final Throwable t = e.getCause();
             if (t instanceof HTTPException) {
-                final HTTPException httpException = (HTTPException) e.getException();
+                final var httpException = (HTTPException) e.getException();
                 throw httpException;
             } else {
                 LOGGER.logp(Level.SEVERE, "HTTPManager", "sendPostRequest", e.getMessage(), e);
@@ -163,31 +161,31 @@ public class HTTPManager {
     @NonNull
     private HTTPResponseData<@NonNull ?> sendPostRequestPrivileged(@NonNull final HTTPRequestData httpRequestData) throws HTTPException {
         HTTPResponseData<@NonNull ?> result = null;
-        final DefaultHttpClient httpclient = getHttpClient(httpRequestData);
-        final String url = httpRequestData.getUrl().toString();
+        final var httpclient = getHttpClient(httpRequestData);
+        final var url = httpRequestData.getUrl().toString();
         try {
-            final HttpPost httpPost = new HttpPost(url);
+            final var httpPost = new HttpPost(url);
 
             if (httpRequestData.getHeaders().isEmpty()) {
-                httpPost.addHeader("Accept", MimeTypeConstants.APPLICATION_JSON);
-                httpPost.addHeader("Content-Type", MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED);
+                httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
+                httpPost.addHeader("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
             } else {
                 for (final Entry<@NonNull String, String> header : httpRequestData.getHeaders().entrySet()) {
                     httpPost.addHeader(header.getKey(), header.getValue());
                 }
             }
-            final HttpEntity typeParametrizedClass = httpRequestData.getTypeParameterClass();
+            final var typeParametrizedClass = httpRequestData.getTypeParameterClass();
             if (typeParametrizedClass == null) {
-                final List<NameValuePair> params = getParamsToUrl(httpRequestData);
+                final var params = getParamsToUrl(httpRequestData);
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
             } else if (typeParametrizedClass instanceof UrlEncodedFormEntity) {
-                final List<NameValuePair> params = getParamsToUrl(httpRequestData);
+                final var params = getParamsToUrl(httpRequestData);
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
             } else {
                 httpPost.setEntity(typeParametrizedClass);
             }
             // Create a response handler
-            final HttpResponse response = httpclient.execute(httpPost);
+            final var response = httpclient.execute(httpPost);
             if (response == null) {
                 throw new HTTPException("No Response from: " + url);
             }
@@ -207,41 +205,41 @@ public class HTTPManager {
 
     @NonNull
     private HTTPResponseData<@NonNull ?> getHTTPResponseData(@NonNull final String url, @NonNull final HttpResponse response) throws HTTPException {
-        final StatusLine statusLine = response.getStatusLine();
-        final int code = statusLine.getStatusCode();
+        final var statusLine = response.getStatusLine();
+        final var code = statusLine.getStatusCode();
         if (statusLine.getStatusCode() >= 300) {
             throw new HTTPException(code, "HTTP ERROR " + code + " : " + url, new Throwable(statusLine.getReasonPhrase()));
         }
-        final HttpEntity entityResponse = response.getEntity();
+        final var entityResponse = response.getEntity();
         if (entityResponse == null) {
             throw new HTTPException("Response contains no content");
         }
-        final HTTPResponseData<@NonNull ?> result = getHTTPResponseData(entityResponse, url);
+        final var result = getHTTPResponseData(entityResponse, url);
         return result;
     }
 
     @NonNull
     private HTTPResponseData<@NonNull ?> getHTTPResponseData(@NonNull final HttpEntity entity, @NonNull final String url) throws HTTPException {
         HTTPResponseData<@NonNull ?> httpResponseData = null;
-        final ContentType contentType = ContentType.get(entity);
+        final var contentType = ContentType.get(entity);
 
-        Charset charset = contentType.getCharset();
+        var charset = contentType.getCharset();
         if (charset == null) {
             charset = Charset.defaultCharset();
             assert charset != null;
         }
         final String mimeType = contentType.getMimeType();
 
-        if (MimeTypeConstants.APPLICATION_JSON.equals(mimeType) || MimeTypeConstants.TEXT_PLAIN.equals(mimeType) || MimeTypeConstants.TEXT_HTML.equals(mimeType) || MimeTypeConstants.TEXT_JAVASCRIPT.equals(mimeType) || MimeTypeConstants.TEXT_XML.equals(mimeType)) {
+        if (MediaType.APPLICATION_JSON_UTF8_VALUE.equals(mimeType) || MediaType.TEXT_PLAIN_VALUE.equals(mimeType) || MediaType.TEXT_HTML_VALUE.equals(mimeType) || MediaType.TEXT_XML_VALUE.equals(mimeType)) {
             // JSON or text or xml
-            final String content = getContentAsString(entity, charset);
-            final HTTPResponseString httpResponseString = new HTTPResponseString();
+            final var content = getContentAsString(entity, charset);
+            final var httpResponseString = new HTTPResponseString();
             httpResponseString.setContent(content);
             httpResponseData = httpResponseString;
-        } else if (MimeTypeConstants.IMAGE_BMP.equals(mimeType) || MimeTypeConstants.IMAGE_GIF.equals(mimeType) || MimeTypeConstants.IMAGE_JPEG.equals(mimeType) || MimeTypeConstants.IMAGE_PNG.equals(mimeType) || MimeTypeConstants.IMAGE_TIFF.equals(mimeType)) {
+        } else if (MediaType.IMAGE_GIF_VALUE.equals(mimeType) || MediaType.IMAGE_JPEG_VALUE.equals(mimeType) || MediaType.IMAGE_PNG_VALUE.equals(mimeType)) {
             // image
-            final BufferedImage content = getContentAsImage(entity);
-            final HTTPResponseBufferedImage httpResponseBufferedImage = new HTTPResponseBufferedImage();
+            final var content = getContentAsImage(entity);
+            final var httpResponseBufferedImage = new HTTPResponseBufferedImage();
             httpResponseBufferedImage.setContent(content);
             httpResponseData = httpResponseBufferedImage;
         } else {
@@ -260,7 +258,7 @@ public class HTTPManager {
         } catch (final PrivilegedActionException e) {
             final Throwable t = e.getCause();
             if (t instanceof HTTPException) {
-                final HTTPException httpException = (HTTPException) e.getException();
+                final var httpException = (HTTPException) e.getException();
                 throw httpException;
             } else {
                 LOGGER.logp(Level.SEVERE, "HTTPManager", "getContentAsImage", e.getMessage(), e);
@@ -276,15 +274,13 @@ public class HTTPManager {
     private String getContentAsString(@NonNull final HttpEntity entity, @NonNull final Charset charset) {
         String result = "";
         try (final BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), charset))) {
-
-            String line = "";
-            final StringBuilder sb = new StringBuilder();
+            var line = "";
+            final var sb = new StringBuilder();
             while ((line = rd.readLine()) != null) {
                 sb.append(line);
             }
 
             result = sb.toString();
-
         } catch (final IllegalStateException e) {
             LOGGER.logp(Level.SEVERE, "HTTPManager", "getContent", e.getMessage(), e);
         } catch (final IOException e) {
@@ -296,7 +292,7 @@ public class HTTPManager {
 
     @NonNull
     private DefaultHttpClient getHttpClient(@NonNull final HTTPRequestData httpRequestData) {
-        final DefaultHttpClient httpclient = new DefaultHttpClient();
+        final var httpclient = new DefaultHttpClient();
 
         if (httpRequestData.isSSl() && httpRequestData.isAllowSelfSignedCertificate()) {
             // this code is to allow self-signed certificates
@@ -304,13 +300,13 @@ public class HTTPManager {
                 // add ssl if necessary
                 // Now put the trust manager into an SSLContext.
                 // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
-                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                final var sslContext = SSLContext.getInstance("SSL");
                 sslContext.init(null, this.trustAllCerts, new SecureRandom());
-                final SSLSocketFactory sf = new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                final var sf = new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
                 // Register our new socket factory with the typical SSL port and the
                 // correct protocol name.
-                final Scheme httpsScheme = new Scheme("https", 443, sf);
+                final var httpsScheme = new Scheme("https", 443, sf);
                 httpclient.getConnectionManager().getSchemeRegistry().register(httpsScheme);
 
             } catch (final KeyManagementException e) {
@@ -325,11 +321,11 @@ public class HTTPManager {
 
     @NonNull
     private List<@NonNull NameValuePair> getParamsToUrl(@NonNull final HTTPRequestData httpRequestData) {
-        final List<@NonNull NameValuePair> params = new LinkedList<>();
-        final Map<String, Object> requestParams = httpRequestData.getParams();
+        final var params = new LinkedList<@NonNull NameValuePair>();
+        final var requestParams = httpRequestData.getParams();
         for (final Entry<String, Object> entry : requestParams.entrySet()) {
-            final String name = entry.getKey();
-            final Object param = entry.getValue();
+            final var name = entry.getKey();
+            final var param = entry.getValue();
 
             params.add(new BasicNameValuePair(name, param.toString()));
         }
