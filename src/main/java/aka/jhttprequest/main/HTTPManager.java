@@ -81,7 +81,7 @@ public class HTTPManager {
             final var httpException = (HTTPException) e.getException();
             throw httpException;
         } else {
-            LOGGER.logp(Level.SEVERE, "HTTPManager", "failingMethodName", e.getMessage(), e);
+            LOGGER.logp(Level.SEVERE, getClass().getName(), failingMethodName, e.getMessage(), e);
             throw new HTTPException(e.getMessage(), e.getCause());
         }
     }
@@ -121,7 +121,7 @@ public class HTTPManager {
             }
             result = getHTTPResponseData(url, response);
         } catch (final IOException e) {
-            LOGGER.logp(Level.SEVERE, "HTTPManager", "sendGetRequestPrivileged", e.getMessage(), e);
+            LOGGER.logp(Level.SEVERE, getClass().getName(), "sendGetRequestPrivileged", e.getMessage(), e);
             throw new HTTPException("HTTP IOException ERROR  : " + url, e.getCause());
         } finally {
             // When HttpClient instance is no longer needed,
@@ -188,7 +188,7 @@ public class HTTPManager {
             }
             result = getHTTPResponseData(url, response);
         } catch (final IOException e) {
-            LOGGER.logp(Level.SEVERE, "HTTPManager", "sendPostRequestPrivileged", e.getMessage(), e);
+            LOGGER.logp(Level.SEVERE, getClass().getName(), "sendPostRequestPrivileged", e.getMessage(), e);
             throw new HTTPException("HTTP IOException ERROR  : " + url, e.getCause());
         } finally {
             // When HttpClient instance is no longer needed,
@@ -272,7 +272,7 @@ public class HTTPManager {
 
             result = sb.toString();
         } catch (final IllegalStateException | IOException e) {
-            LOGGER.logp(Level.SEVERE, "HTTPManager", "getContent", e.getMessage(), e);
+            LOGGER.logp(Level.SEVERE, getClass().getName(), "getContent", e.getMessage(), e);
         }
 
         return result;
@@ -298,7 +298,7 @@ public class HTTPManager {
                 httpclient.getConnectionManager().getSchemeRegistry().register(httpsScheme);
 
             } catch (final KeyManagementException | NoSuchAlgorithmException e) {
-                LOGGER.logp(Level.SEVERE, "HTTPManager", "getHttpClient", e.getMessage(), e);
+                LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
             }
         }
 
