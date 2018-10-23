@@ -289,35 +289,30 @@ public class HTTPManager {
     @NonNull
     private HttpClient getHttpClient(@NonNull final HTTPRequestData httpRequestData) {
         final var httpclient = HttpClients.custom();
-        if (httpRequestData.isSSl() && httpRequestData.isAllowSelfSignedCertificate()) {
-            // this code is to allow self-signed certificates
-            try {
-                // add ssl if necessary
-                // Now put the trust manager into an SSLContext.
-                // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
-                final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-                    @Override
-                    public boolean isTrusted(final X509Certificate[] arg0, final String arg1) throws CertificateException {
-                        return true;
-                    }
-                }).build();
+        // this code is to allow self-signed certificates
+        try {
+            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+                @Override
+                public boolean isTrusted(final X509Certificate[] arg0, final String arg1) throws CertificateException {
+                    return true;
+                }
+            }).build();
 
-                final HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
+            final HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
 
-                final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
-                final Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
-                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                        .register("https", sslSocketFactory)
-                        .build();
+            final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+            final Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                    .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                    .register("https", sslSocketFactory)
+                    .build();
 
-                final PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-                httpclient.setConnectionManager(connMgr);
-                httpclient.setSSLHostnameVerifier(allowAllHosts);
-                httpclient.setSSLContext(sslContext);
+            final PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+            httpclient.setConnectionManager(connMgr);
+            httpclient.setSSLHostnameVerifier(allowAllHosts);
+            httpclient.setSSLContext(sslContext);
 //                httpclient.setSSLSocketFactory(connectionFactory);
-            } catch (final KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-                LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
-            }
+        } catch (final KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+            LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
         }
 
         return httpclient.build();
