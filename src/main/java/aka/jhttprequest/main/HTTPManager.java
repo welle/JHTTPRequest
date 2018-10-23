@@ -11,6 +11,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,13 +33,18 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.springframework.http.MediaType;
@@ -289,18 +295,26 @@ public class HTTPManager {
                 // add ssl if necessary
                 // Now put the trust manager into an SSLContext.
                 // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
-                final SSLContext sslContext = SSLContextBuilder
-                        .create()
-                        .loadTrustMaterial(new TrustSelfSignedStrategy())
-                        .build();
+                final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+                    @Override
+                    public boolean isTrusted(final X509Certificate[] arg0, final String arg1) throws CertificateException {
+                        return true;
+                    }
+                }).build();
 
                 final HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
 
-                // Register our new socket factory with the typical SSL port and the
-                // correct protocol name.
-                final SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+                final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+                final Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                        .register("https", sslSocketFactory)
+                        .build();
 
-                httpclient.setSSLSocketFactory(connectionFactory);
+                final PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+                httpclient.setConnectionManager(connMgr);
+                httpclient.setSSLHostnameVerifier(allowAllHosts);
+                httpclient.setSSLContext(sslContext);
+//                httpclient.setSSLSocketFactory(connectionFactory);
             } catch (final KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
                 LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
             }
