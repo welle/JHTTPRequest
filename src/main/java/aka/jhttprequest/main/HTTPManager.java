@@ -30,15 +30,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.eclipse.jdt.annotation.NonNull;
@@ -284,7 +279,7 @@ public class HTTPManager {
 
     @NonNull
     private HttpClient getHttpClient(@NonNull final HTTPRequestData httpRequestData) {
-        final var httpclient = HttpClientBuilder.create();
+        final var httpclient = HttpClients.custom();
         if (httpRequestData.isSSl() && httpRequestData.isAllowSelfSignedCertificate()) {
             // this code is to allow self-signed certificates
             try {
@@ -293,20 +288,19 @@ public class HTTPManager {
                 // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
                 final SSLContextBuilder builder = new SSLContextBuilder();
                 builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                        builder.build());
+                final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
 
                 // Register our new socket factory with the typical SSL port and the
                 // correct protocol name.
                 httpclient.setSSLSocketFactory(sslsf);
 
-                final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-                        .register("https", sslsf)
-                        .build();
-
-                final HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
-
-                httpclient.setConnectionManager(ccm);
+//                final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+//                        .register("https", sslsf)
+//                        .build();
+//
+//                final HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+//
+//                httpclient.setConnectionManager(ccm);
             } catch (final KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
                 LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
             }
