@@ -26,16 +26,23 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.springframework.http.MediaType;
 
 import aka.jhttprequest.main.common.HTTPRequestData;
@@ -61,7 +68,7 @@ public class HTTPManager {
      * @see HTTPRequestData
      * @see HTTPException
      */
-    @NonNull
+    @Nullable
     public HTTPResponseData<@NonNull ?> sendGetRequest(@NonNull final HTTPRequestData httpRequestData) throws HTTPException {
         HTTPResponseData<@NonNull ?> result = null;
 
@@ -71,7 +78,6 @@ public class HTTPManager {
             handleException(e, "sendGetRequest");
         }
 
-        assert result != null;
         return result;
     }
 
@@ -86,7 +92,7 @@ public class HTTPManager {
         }
     }
 
-    @NonNull
+    @Nullable
     private HTTPResponseData<?> sendGetRequestPrivileged(@NonNull final HTTPRequestData httpRequestData) throws HTTPException {
         HTTPResponseData<?> result = null;
         final var httpclient = getHttpClient(httpRequestData);
@@ -103,9 +109,8 @@ public class HTTPManager {
         }
 
         final var url = sb.toString();
+        final var httpget = new HttpGet(url);
         try {
-            final var httpget = new HttpGet(url);
-
             if (httpRequestData.getHeaders().isEmpty()) {
                 httpget.addHeader("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
             } else {
@@ -127,7 +132,7 @@ public class HTTPManager {
             // When HttpClient instance is no longer needed,
             // shut down the connection manager to ensure
             // immediate deallocation of all system resources
-            httpclient.getConnectionManager().shutdown();
+            httpget.releaseConnection();
         }
 
         return result;
@@ -155,13 +160,13 @@ public class HTTPManager {
         return result;
     }
 
-    @NonNull
+    @Nullable
     private HTTPResponseData<@NonNull ?> sendPostRequestPrivileged(@NonNull final HTTPRequestData httpRequestData) throws HTTPException {
         HTTPResponseData<@NonNull ?> result = null;
         final var httpclient = getHttpClient(httpRequestData);
         final var url = httpRequestData.getUrl().toString();
+        final var httpPost = new HttpPost(url);
         try {
-            final var httpPost = new HttpPost(url);
 
             if (httpRequestData.getHeaders().isEmpty()) {
                 httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -194,9 +199,8 @@ public class HTTPManager {
             // When HttpClient instance is no longer needed,
             // shut down the connection manager to ensure
             // immediate deallocation of all system resources
-            httpclient.getConnectionManager().shutdown();
+            httpPost.releaseConnection();
         }
-
         return result;
     }
 
@@ -279,8 +283,8 @@ public class HTTPManager {
     }
 
     @NonNull
-    private DefaultHttpClient getHttpClient(@NonNull final HTTPRequestData httpRequestData) {
-        final var httpclient = new DefaultHttpClient();
+    private HttpClient getHttpClient(@NonNull final HTTPRequestData httpRequestData) {
+        final var httpclient = HttpClientBuilder.create();
 
         if (httpRequestData.isSSl() && httpRequestData.isAllowSelfSignedCertificate()) {
             // this code is to allow self-signed certificates
@@ -290,19 +294,25 @@ public class HTTPManager {
                 // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
                 final var sslContext = SSLContext.getInstance("SSL");
                 sslContext.init(null, this.trustAllCerts, new SecureRandom());
-                final var sf = new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
 
                 // Register our new socket factory with the typical SSL port and the
                 // correct protocol name.
-                final var httpsScheme = new Scheme("https", 443, sf);
-                httpclient.getConnectionManager().getSchemeRegistry().register(httpsScheme);
+                httpclient.setSSLSocketFactory(sslConnectionFactory);
 
+                final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+                        .register("https", sslConnectionFactory)
+                        .build();
+
+                final HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+
+                httpclient.setConnectionManager(ccm);
             } catch (final KeyManagementException | NoSuchAlgorithmException e) {
                 LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
             }
         }
 
-        return httpclient;
+        return httpclient.build();
     }
 
     @NonNull
