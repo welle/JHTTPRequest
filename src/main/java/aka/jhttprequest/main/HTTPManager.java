@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -30,6 +32,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
@@ -286,21 +289,18 @@ public class HTTPManager {
                 // add ssl if necessary
                 // Now put the trust manager into an SSLContext.
                 // Supported: SSL, SSLv2, SSLv3, TLS, TLSv1, TLSv1.1
-                final SSLContextBuilder builder = new SSLContextBuilder();
-                builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
+                final SSLContext sslContext = SSLContextBuilder
+                        .create()
+                        .loadTrustMaterial(new TrustSelfSignedStrategy())
+                        .build();
+
+                final HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
 
                 // Register our new socket factory with the typical SSL port and the
                 // correct protocol name.
-                httpclient.setSSLSocketFactory(sslsf);
+                final SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
 
-//                final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-//                        .register("https", sslsf)
-//                        .build();
-//
-//                final HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
-//
-//                httpclient.setConnectionManager(ccm);
+                httpclient.setSSLSocketFactory(connectionFactory);
             } catch (final KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
                 LOGGER.logp(Level.SEVERE, getClass().getName(), "getHttpClient", e.getMessage(), e);
             }
